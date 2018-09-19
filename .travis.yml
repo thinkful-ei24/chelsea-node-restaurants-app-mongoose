@@ -2,3 +2,11 @@ language: node_js
 node_js: node
 services:
   - mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: ScnUfAB1rWoiWnqL0hh/2iPiBxYgtO8XKEfS/dqFa3+ObcLz/l2i+TB+kbLEDiQW0fcNLpTxRk9w99X4A2vgNhZIIOks+GcKrsne8U4YHz9T/ORYXC7LJY03dQklckOd4OneziMnEkQtODv9GyABq8L4JZHzu+1whxhu/AWv0gjRl3Y1pwK3A9n83M9KbkD9KOcVQxI65Sem8JyQ2+wRz5EhzjO59RiNY29R8yExjoP7rom7HUXGIxSzJ+/tU3Z+Kc15FtcoH4YdRQjcJ1ZS1B0VqFDKZmpTp0sSwAZlgGa/GiAfrH4n5wI1I0HPlRVUP/uUmw/nlCcR6mp7IMpD03sZ0CPMMD+1vt1xA5tamY1P9HkxkcpTswUpGPC7tut2dE2yMvXigJlywz9BsOjnLZPENSQUh4nbp+O1bkzpl1uh9jhVrCJDfzzaqON9tRzYK4EgdrQutudaRCWwIC73Svqec6LeJTiGGOJoglpu9ZDPmUNhvO2pzODPQN7ISHayBQJQUqTsPfPwsbGffHJ9cXAgDEAsxHxemM+2JfovuM+DdTx8MwafVea081MB93PPrp6IGYzX6GYel118kRW7Fw1JFuco24ubxuLgcis/5XSgFpS1mZg2KnkdX7Q2LKlLelN6RfG74iM+HRgiWXRBaoQzv2zExWCwNOyE2GuQM+E=
+  app: rocky-ocean-27218
+  on:
+    repo: thinkful-ei24/chelsea-node-restaurants-app-mongoose
+    branch: master
