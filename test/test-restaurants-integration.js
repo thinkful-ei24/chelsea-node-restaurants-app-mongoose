@@ -9,9 +9,9 @@ const mongoose = require('mongoose');
 // this module
 const expect = chai.expect;
 
-const {Restaurant} = require('../models');
-const {app, runServer, closeServer} = require('../server');
-const {TEST_DATABASE_URL} = require('../config');
+const { Restaurant } = require('../models');
+const { app, runServer, closeServer } = require('../server');
+const { TEST_DATABASE_URL } = require('../config');
 
 chai.use(chaiHttp);
 
@@ -24,7 +24,7 @@ function seedRestaurantData() {
   console.info('seeding restaurant data');
   const seedData = [];
 
-  for (let i=1; i<=10; i++) {
+  for (let i = 1; i <= 10; i++) {
     seedData.push(generateRestaurantData());
   }
   // this will return a promise
@@ -34,7 +34,12 @@ function seedRestaurantData() {
 // used to generate data to put in db
 function generateBoroughName() {
   const boroughs = [
-    'Manhattan', 'Queens', 'Brooklyn', 'Bronx', 'Staten Island'];
+    'Manhattan',
+    'Queens',
+    'Brooklyn',
+    'Bronx',
+    'Staten Island'
+  ];
   return boroughs[Math.floor(Math.random() * boroughs.length)];
 }
 
@@ -71,7 +76,6 @@ function generateRestaurantData() {
   };
 }
 
-
 // this function deletes the entire database.
 // we'll call it in an `afterEach` block below
 // to ensure data from one test does not stick
@@ -82,7 +86,6 @@ function tearDownDb() {
 }
 
 describe('Restaurants API resource', function() {
-
   // we need each of these hook functions to return a promise
   // otherwise we'd need to call a `done` callback. `runServer`,
   // `seedRestaurantData` and `tearDownDb` each return a promise,
@@ -107,7 +110,6 @@ describe('Restaurants API resource', function() {
   // this allows us to make clearer, more discrete tests that focus
   // on proving something small
   describe('GET endpoint', function() {
-
     it('should return all existing restaurants', function() {
       // strategy:
       //    1. get back all restaurants returned by by GET request to `/restaurants`
@@ -118,7 +120,8 @@ describe('Restaurants API resource', function() {
       // need to have access to mutate and access `res` across
       // `.then()` calls below, so declare it here so can modify in place
       let res;
-      return chai.request(app)
+      return chai
+        .request(app)
         .get('/restaurants')
         .then(function(_res) {
           // so subsequent .then blocks can access response object
@@ -133,12 +136,12 @@ describe('Restaurants API resource', function() {
         });
     });
 
-
     it('should return restaurants with right fields', function() {
       // Strategy: Get back all restaurants, and ensure they have expected keys
 
       let resRestaurant;
-      return chai.request(app)
+      return chai
+        .request(app)
         .get('/restaurants')
         .then(function(res) {
           expect(res).to.have.status(200);
@@ -149,13 +152,18 @@ describe('Restaurants API resource', function() {
           res.body.restaurants.forEach(function(restaurant) {
             expect(restaurant).to.be.a('object');
             expect(restaurant).to.include.keys(
-              'id', 'name', 'cuisine', 'borough', 'grade', 'address');
+              'id',
+              'name',
+              'cuisine',
+              'borough',
+              'grade',
+              'address'
+            );
           });
           resRestaurant = res.body.restaurants[0];
           return Restaurant.findById(resRestaurant.id);
         })
         .then(function(restaurant) {
-
           expect(resRestaurant.id).to.equal(restaurant.id);
           expect(resRestaurant.name).to.equal(restaurant.name);
           expect(resRestaurant.cuisine).to.equal(restaurant.cuisine);
@@ -173,11 +181,11 @@ describe('Restaurants API resource', function() {
     // right keys, and that `id` is there (which means
     // the data was inserted into db)
     it('should add a new restaurant', function() {
-
       const newRestaurant = generateRestaurantData();
       let mostRecentGrade;
 
-      return chai.request(app)
+      return chai
+        .request(app)
         .post('/restaurants')
         .send(newRestaurant)
         .then(function(res) {
@@ -185,7 +193,13 @@ describe('Restaurants API resource', function() {
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
           expect(res.body).to.include.keys(
-            'id', 'name', 'cuisine', 'borough', 'grade', 'address');
+            'id',
+            'name',
+            'cuisine',
+            'borough',
+            'grade',
+            'address'
+          );
           expect(res.body.name).to.equal(newRestaurant.name);
           // cause Mongo should have created id on insertion
           expect(res.body.id).to.not.be.null;
@@ -193,7 +207,8 @@ describe('Restaurants API resource', function() {
           expect(res.body.borough).to.equal(newRestaurant.borough);
 
           mostRecentGrade = newRestaurant.grades.sort(
-            (a, b) => b.date - a.date)[0].grade;
+            (a, b) => b.date - a.date
+          )[0].grade;
 
           expect(res.body.grade).to.equal(mostRecentGrade);
           return Restaurant.findById(res.body.id);
@@ -203,15 +218,20 @@ describe('Restaurants API resource', function() {
           expect(restaurant.cuisine).to.equal(newRestaurant.cuisine);
           expect(restaurant.borough).to.equal(newRestaurant.borough);
           expect(restaurant.grade).to.equal(mostRecentGrade);
-          expect(restaurant.address.building).to.equal(newRestaurant.address.building);
-          expect(restaurant.address.street).to.equal(newRestaurant.address.street);
-          expect(restaurant.address.zipcode).to.equal(newRestaurant.address.zipcode);
+          expect(restaurant.address.building).to.equal(
+            newRestaurant.address.building
+          );
+          expect(restaurant.address.street).to.equal(
+            newRestaurant.address.street
+          );
+          expect(restaurant.address.zipcode).to.equal(
+            newRestaurant.address.zipcode
+          );
         });
     });
   });
 
   describe('PUT endpoint', function() {
-
     // strategy:
     //  1. Get an existing restaurant from db
     //  2. Make a PUT request to update that restaurant
@@ -223,14 +243,14 @@ describe('Restaurants API resource', function() {
         cuisine: 'futuristic fusion'
       };
 
-      return Restaurant
-        .findOne()
+      return Restaurant.findOne()
         .then(function(restaurant) {
           updateData.id = restaurant.id;
 
           // make request then inspect it to make sure it reflects
           // data we sent
-          return chai.request(app)
+          return chai
+            .request(app)
             .put(`/restaurants/${restaurant.id}`)
             .send(updateData);
         })
@@ -253,11 +273,9 @@ describe('Restaurants API resource', function() {
     //  3. assert that response has right status code
     //  4. prove that restaurant with the id doesn't exist in db anymore
     it('delete a restaurant by id', function() {
-
       let restaurant;
 
-      return Restaurant
-        .findOne()
+      return Restaurant.findOne()
         .then(function(_restaurant) {
           restaurant = _restaurant;
           return chai.request(app).delete(`/restaurants/${restaurant.id}`);
